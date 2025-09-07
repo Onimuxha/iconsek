@@ -11,12 +11,13 @@
   },
   "dependencies": {
     "framer-motion": "^12.23.12",
-    "jszip": "^3.10.1",
     "iconsek": "file:../../packages/icons",
+    "iconsek-monorepo": "file:../..",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.539.0",
-    "sonner": "^1.7.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sonner": "^1.7.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.23",
