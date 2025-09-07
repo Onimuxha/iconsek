@@ -16,10 +16,10 @@ function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-2 font-bold">
-              <span className="w-7 h-7 rounded bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm">
-                ⚡
+              <span className="flex items-center justify-center text-white text-sm">
+                <img src="/text-white.png" alt="" />
+                Hello
               </span>
-              Iconsek
             </Link>
 
             <nav className="hidden sm:flex gap-1">
