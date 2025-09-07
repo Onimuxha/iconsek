@@ -1,13 +1,24 @@
 {
   "name": "iconsek",
-  "version": "0.1.0",
+  "version": "1.0.4",
   "private": false,
   "type": "module",
   "main": "dist/index.cjs",
-  "module": "src/index.ts",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --out-dir dist --format cjs,esm --dts",
     "typecheck": "tsc -p tsconfig.json"
