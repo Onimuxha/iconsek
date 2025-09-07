@@ -15,11 +15,11 @@ export const iconsLinearData: IconData[] = [
     category: "interface",
     keywords: ["align", "center"],
     svgContent:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M6 12h12"/><path d="M3 18h18"/></svg>',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 12h12"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 18h18"/></svg>',
     weights: ["all", "linear"],
   },
   {
-    name: "Star",
+    name: "StarLinear",
     category: "shapes",
     keywords: ["star", "favorite", "rate"],
     svgContent:

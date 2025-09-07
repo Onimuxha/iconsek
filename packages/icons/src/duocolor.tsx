@@ -3,7 +3,7 @@ import type { IconData } from "./types/icon";
 
 export const iconsDuocolorData: IconData[] = [
   {
-    name: "AlignCenter",
+    name: "AlignCenterDuo",
     category: "interface",
     keywords: ["align",],
     svgContent: `<svg viewBox="0 0 24 24" fill="none">
