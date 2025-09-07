@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "dev": "npm --prefix apps/web run dev",
+    "build": "npm --prefix packages/icons run build && npm --prefix apps/web run build",
+    "preview": "npm --prefix apps/web run preview",
+    "format.fix": "prettier --write .",
+    "typecheck": "npm --prefix apps/web run typecheck && npm --prefix packages/icons run typecheck",
+    "cf:build": "npm install && npm run build"
   },
   "workspaces": [
     "apps/*",
