@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import type { IconData } from "../../../../packages/icons/src/types/icon";
 import { copySvg, copyReactSnippet, downloadSvg } from "../lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Modal } from "./Modal";
-import { Copy, Download, Info } from "lucide-react";
+import { Copy, Download } from "lucide-react";
 import { applySvgProps } from "../lib/svg";
-import { copyText } from "../lib/utils";
 
 export function IconCard({ data, currentWeight, size, strokeWidth }: {
   data: IconData;
@@ -14,84 +13,167 @@ export function IconCard({ data, currentWeight, size, strokeWidth }: {
   strokeWidth: number;
 }) {
   const [open, setOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!openMenu) return;
-    const onDown = (e: MouseEvent) => {
-      if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target as Node)) setOpenMenu(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [openMenu]);
-  function doCopy(kind: "jsx" | "svg"){
-    if (kind === "jsx") copyReactSnippet(data.name, currentWeight, size, strokeWidth);
-    if (kind === "svg") copySvg(applySvgProps(data.svgContent, { strokeWidth }));
-    setOpenMenu(false);
-  }
+  const [modalSize, setModalSize] = useState(size);
+  const [modalStroke, setModalStroke] = useState(strokeWidth);
+
+  const doCopy = (kind: "jsx" | "svg") => {
+    kind === "jsx" 
+      ? copyReactSnippet(data.name, currentWeight, modalSize, modalStroke)
+      : copySvg(applySvgProps(data.svgContent, { strokeWidth: modalStroke }));
+  };
+
+  const handleDownload = () => downloadSvg({
+    ...data,
+    svgContent: applySvgProps(data.svgContent, { strokeWidth: modalStroke })
+  });
+
   return (
     <>
       <motion.div
-        whileHover={{ y: -3 }}
-        transition={{ duration: 0.15 }}
-        className="card p-3 group h-full flex flex-col hover:ring-1 ring-foreground/15"
+        whileHover={{ y: -3, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="card p-4 group h-full flex flex-col cursor-pointer hover:ring-2 ring-primary/20 hover:shadow-lg transition-all"
+        onClick={() => setOpen(true)}
       >
         <div className="flex-1 grid place-items-center p-4">
-          <div className="relative" style={{ width: size, height: size }}>
-            <div className="absolute inset-0 blur-xl opacity-0 group-hover:opacity-40 transition bg-primary/30 rounded-full" />
-            <div dangerouslySetInnerHTML={{ __html: applySvgProps(data.svgContent, { strokeWidth }) }} className="w-full h-full text-foreground" />
-          </div>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: applySvgProps(data.svgContent, { strokeWidth })
+            }}
+            style={{ width: size, height: size }}
+            className="text-foreground transition-transform group-hover:scale-110"
+          />
         </div>
-        <div className="mt-2">
-          <div className="text-sm font-medium truncate" title={data.name}>{data.name}</div>
-          <div className="text-xs text-foreground/60 capitalize">{currentWeight}</div>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <div className="relative" ref={menuRef}>
-              <button className="select w-full text-left" onClick={()=>setOpenMenu((v)=>!v)}>Copy…</button>
-              {openMenu && (
-                <div className="menu" role="menu">
-                  <button className="menu-item" onMouseDown={()=>doCopy("jsx")}>Copy JSX usage</button>
-                  <button className="menu-item" onMouseDown={()=>doCopy("svg")}>Copy SVG markup</button>
-                </div>
-              )}
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button className="icon-btn" onClick={() => downloadSvg({ ...data, svgContent: applySvgProps(data.svgContent, { strokeWidth }) })} title="Download SVG" aria-label="Download SVG"><Download className="h-4 w-4 mx-auto"/></button>
-              <button className="icon-btn" onClick={() => setOpen(true)} title="Details" aria-label="Details"><Info className="h-4 w-4 mx-auto"/></button>
-            </div>
+        <div className="mt-2 text-center">
+          <div className="text-sm font-medium truncate" title={data.name}>
+            {data.name}
+          </div>
+          <div className="text-xs text-foreground/60 capitalize">
+            {currentWeight}
           </div>
         </div>
       </motion.div>
+
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div className="grid gap-4">
-          <div className="flex items-start gap-4">
-            <div className="p-4 rounded-lg bg-foreground/5">
-              <div dangerouslySetInnerHTML={{ __html: applySvgProps(data.svgContent, { strokeWidth }) }} style={{ width: size, height: size }} className="text-foreground" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-2">{data.name}</h3>
-              <p className="text-sm text-foreground/70">Category: {data.category}</p>
-              <p className="text-sm text-foreground/70">Keywords: {data.keywords.join(", ")}</p>
-            </div>
-          </div>
-          <div className="grid gap-2">
-            <div>
-              <div className="text-sm font-medium mb-1">Install</div>
-              <div className="relative">
-                <pre className="relative card p-3 overflow-auto text-xs pr-8"><code>npm i iconsek</code></pre>
-                <button className="icon-btn absolute top-2 right-2" aria-label="Copy install" onClick={()=>copyText('npm i iconsek')}><Copy className="h-3.5 w-3.5"/></button>
+        <div className="grid gap-4 sm:gap-6 w-full max-w-4xl mx-auto p-2 sm:p-4">
+          {/* Icon Preview and Controls */}
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+            <div className="flex-1 min-w-0">
+              <div className="p-4 sm:p-6 rounded-xl bg-gradient-to-br from-foreground/5 to-foreground/10 border border-foreground/10 flex items-center justify-center">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: applySvgProps(data.svgContent, { strokeWidth: modalStroke })
+                  }}
+                  style={{ width: modalSize, height: modalSize }}
+                  className="text-foreground"
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground/70">Size: {modalSize}px</label>
+                  <input
+                    type="range"
+                    min={16}
+                    max={128}
+                    step={4}
+                    value={modalSize}
+                    onChange={(e) => setModalSize(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground/70">Stroke: {modalStroke.toFixed(1)}</label>
+                  <input
+                    type="range"
+                    min={0.5}
+                    max={3}
+                    step={0.1}
+                    value={modalStroke}
+                    onChange={(e) => setModalStroke(Number(e.target.value))}
+                    className="w-full accent-primary"
+                  />
+                </div>
               </div>
             </div>
-            <div>
-              <div className="text-sm font-medium mb-1">Usage</div>
-              <div className="relative">
-                <pre className="relative card p-3 overflow-auto text-xs pr-8"><code>{`import { ${data.name} } from "iconsek";
 
-export default function Example(){
-  return <${data.name} size={${size}} type="${currentWeight === 'duocolor' ? 'duo' : currentWeight}" strokeWidth={${strokeWidth}} />
-}`}</code></pre>
-                <button className="icon-btn absolute top-2 right-2" aria-label="Copy usage" onClick={()=>copyText(`import { ${data.name} } from \"iconsek\";\n\nexport default function Example(){\n  return <${data.name} size={${size}} type=\"${currentWeight === 'duocolor' ? 'duo' : currentWeight}\" strokeWidth={${strokeWidth}} />\n}`)}><Copy className="h-3.5 w-3.5"/></button>
+            {/* Icon Details */}
+            <div className="flex-1 min-w-0 space-y-4">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{data.name}</h3>
+                <div className="text-xs sm:text-sm text-foreground/70 space-y-1">
+                  <p><span className="font-medium">Category:</span> {data.category}</p>
+                  <p><span className="font-medium">Style:</span> {currentWeight}</p>
+                  <p className="break-words"><span className="font-medium">Keywords:</span> {data.keywords.join(", ")}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleDownload}
+                  className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm sm:text-base"
+                >
+                  <Download className="h-4 w-4" />
+                  Download SVG
+                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => doCopy("jsx")}
+                    className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors text-xs sm:text-sm"
+                  >
+                    <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Copy</span> JSX
+                  </button>
+                  <button
+                    onClick={() => doCopy("svg")}
+                    className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors text-xs sm:text-sm"
+                  >
+                    <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Copy</span> SVG
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage Examples */}
+          <div className="grid gap-4">
+            <div>
+              <div className="text-sm font-medium mb-2">Install</div>
+              <div className="relative">
+                <pre className="p-3 sm:p-4 overflow-auto text-xs sm:text-sm bg-foreground/5 rounded-lg border border-foreground/10">
+                  <code>npm install iconsek</code>
+                </pre>
+                <button
+                  className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1 hover:bg-foreground/10 rounded transition-colors"
+                  onClick={() => navigator.clipboard?.writeText("npm install iconsek")}
+                >
+                  <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-sm font-medium mb-2">React Usage</div>
+              <div className="relative">
+                <pre className="p-3 sm:p-4 overflow-auto text-xs sm:text-sm bg-foreground/5 rounded-lg border border-foreground/10 max-h-40 sm:max-h-none">
+                  <code>{`import { ${data.name} } from "iconsek";
+
+export default function Example() {
+  return (
+    <${data.name} 
+      size={${modalSize}} 
+      type="${currentWeight === "duocolor" ? "duo" : currentWeight}" 
+      strokeWidth={${modalStroke}} 
+    />
+  );
+}`}</code>
+                </pre>
+                <button
+                  className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1 hover:bg-foreground/10 rounded transition-colors"
+                  onClick={() => navigator.clipboard?.writeText(`import { ${data.name} } from "iconsek";\n\nexport default function Example() {\n  return (\n    <${data.name} \n      size={${modalSize}} \n      type="${currentWeight === "duocolor" ? "duo" : currentWeight}" \n      strokeWidth={${modalStroke}} \n    />\n  );\n}`)}
+                >
+                  <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
               </div>
             </div>
           </div>
