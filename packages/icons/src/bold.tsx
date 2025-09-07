@@ -5,7 +5,7 @@ export const iconsBoldData: IconData[] = [
   {
     name: "HomeBold",
     category: "interface",
-    keywords: ["home", "house", "start"],
+    keywords: ["home", "start"],
     svgContent:
       '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10.5L12 3l9 7.5v9.5a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2v-9.5z"/></svg>',
     weights: ["all", "bold"],
