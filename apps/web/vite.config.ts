@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      iconsek: resolve(__dirname, "../../packages/icons/src"),
+      iconsek: resolve(__dirname, "../../packages/icons/dist"),
     },
   },
   server: {
@@ -20,6 +20,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: [],
+    exclude: ["iconsek"],
   },
 });
